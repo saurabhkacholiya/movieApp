@@ -4,15 +4,47 @@ import {
   StyleSheet,
   TextInput,
   Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Loader from '../utils/Loader';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux'
 import { FontAwesome } from 'react-native-vector-icons';
+import { truncateString } from "../utils/commonFunctions";
+import { 
+  data,
+  NUMBER_COLUMNS,
+  ITEM_WIDTH,
+  COLORS,
+} from "../constant";
+import { 
+  fetchMovieData,
+  fetchSelectedMovie,
+  fetchWishListData,
+} from "../MainApp/selectors";
+import { 
+  toggleTheValueOfSelectedMovie,
+  updateWishList,
+  getSearchTermResult,
+} from "../MainApp/actions";
+import NetworkUtils from "../utils/NetworkUtils";
 
 function SearchScreen({
   navigation,
+  fetchMovieData,
+  fetchSelectedMovie,
+  toggleTheValueOfSelectedMovie,
+  updateWishList,
+  fetchWishListData,
+  getSearchTermResult,
 }) {
 
+  useEffect(() => {
+    getSearchTermResult('world')
+  },[])
 
 const debounce = function (callback,delay){
   let timer
@@ -24,8 +56,52 @@ const debounce = function (callback,delay){
   }
 }
 
-  // const onChange = debounce(setDataAfterTimeOut, 300);
-  const onChange = debounce(() => console.log('called'), 300);
+// const onChange = debounce(setDataAfterTimeOut, 500);
+const onChange = debounce(() => console.log('called'), 500);
+
+const addToWishList = (item) => {
+      const selectedMovieObj = fetchSelectedMovie.toJS()
+     const wishListMovies = fetchWishListData.toJS()
+     let newWishList = []
+     const newSelectedMovieList = {
+       ...selectedMovieObj,
+       [item.imdbID]: selectedMovieObj[item.imdbID] ? false : true
+     }
+     
+     if(selectedMovieObj[item.imdbID]){
+       newWishList = wishListMovies.filter(obj => obj.imdbID !== item.imdbID)
+     }else{
+       newWishList = [...wishListMovies, item]
+     }
+
+    toggleTheValueOfSelectedMovie(newSelectedMovieList)
+    updateWishList(newWishList)  
+}
+
+const renderItem = ({item}) => {
+  return (
+      <TouchableOpacity style={styles.flexOne} onPress={() => addToWishList(item)}>
+        <View style={styles.startView}>
+          <FontAwesome 
+            name={fetchSelectedMovie.toJS()[item.imdbID] ? "star" : 'star-o'}
+            color={COLORS.mainThemeColor}
+            size={30}
+          />
+        </View>
+        <View style={[styles.renderItemMainView]}>
+          <Image 
+            source={{uri : item.Poster}} 
+            resizeMode="contain"
+            style={styles.renderImageStyle}
+          />
+        </View>
+        <View style={styles.renderTextView}>
+          <Text style={styles.textStyle}>{truncateString(item.Title,20)}</Text>
+          <Text style={styles.textStyle}>{`Year:- ${item.Year}`}</Text>
+        </View>
+      </TouchableOpacity>
+    )
+}
 
   return (
     <SafeAreaView style={styles.safeAreaViewStyle}>
@@ -35,7 +111,7 @@ const debounce = function (callback,delay){
                   <FontAwesome
                       style={styles.iconStyle}
                       name="search"
-                      color={"#F7882F"}
+                      color={COLORS.mainThemeColor}
                       size={16}
                   />
                   <TextInput
@@ -47,7 +123,13 @@ const debounce = function (callback,delay){
           </View>
       </View>
       <View style={styles.container}>
-        
+        <FlatList 
+          data={fetchMovieData.toJS()}
+          renderItem={renderItem}
+          numColumns={NUMBER_COLUMNS}
+          keyExtractor={(item) => item.imdbID}
+          extraData={[fetchSelectedMovie.toJS(),fetchMovieData.toJS()]}
+        />
       </View>
     </SafeAreaView>
   )
@@ -56,16 +138,16 @@ const debounce = function (callback,delay){
 const styles = StyleSheet.create({
   safeAreaViewStyle: {
       flex: 1,
-      backgroundColor: '#F7882F'
+      backgroundColor: COLORS.mainThemeColor
   },
   headerView: {
       height: 90,
-      backgroundColor: '#F7882F',
+      backgroundColor: COLORS.mainThemeColor,
       flex: 0,
       justifyContent: 'flex-end',
   },
   searchView: {
-      backgroundColor: '#fff',
+      backgroundColor: COLORS.whiteColor,
       height: 50,
       marginTop: 0,
       margin: 10,
@@ -88,7 +170,51 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  renderItemMainView: {
+    height: 200,
+    width: (ITEM_WIDTH - 10 * NUMBER_COLUMNS) / NUMBER_COLUMNS,
+    margin: 5,
+    flex:1,
+  },
+  renderImageStyle: {
+    width: (ITEM_WIDTH - 10 * NUMBER_COLUMNS) / NUMBER_COLUMNS,
+    height: 200,
+  },
+  renderTextView:{
+    flex:1,
+    flexDirection:'column',
+  },
+  textStyle:{
+    textAlign:'center',
+    fontWeight:'bold',
+  },
+  startView: {
+    position:'absolute',
+    top: 10, 
+    right: 40,
+    zIndex: 10,
+  },
+  flexOne:{
+    flex: 1
+  }
+});
+
+const mapStateToProps = createStructuredSelector({
+  fetchMovieData: fetchMovieData(),
+  fetchSelectedMovie: fetchSelectedMovie(),
+  fetchWishListData: fetchWishListData(),
 });
 
 
-export default SearchScreen
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggleTheValueOfSelectedMovie: (data) => dispatch(toggleTheValueOfSelectedMovie(data)),
+    updateWishList: (data) => dispatch(updateWishList(data)),
+    getSearchTermResult: (data) => dispatch(getSearchTermResult(data)),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(SearchScreen)
