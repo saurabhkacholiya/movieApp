@@ -20,8 +20,10 @@ export function* getSearchTermDataInSaga({data}) {
   try {
     yield put(setLoader(true));
     const response = yield axiosInstance.get(`/?type=movie&apikey=a1b5f9ec&s=${data}`);
-    if (response.data.Response) {
+    if (response.data.Response && response.data.Search ) {
         yield put(setMovieData(response.data.Search))
+    }else{
+      yield put(setMovieData([]))
     }
   } catch (error) {
     console.log('error in login ', error)

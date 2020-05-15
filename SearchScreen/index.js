@@ -77,6 +77,14 @@ const addToWishList = (item) => {
     updateWishList(newWishList)  
 }
 
+const renderEmptyComponent = () => {
+  return (
+    <View style={styles.renderEmptyComponentView}>
+      <Text style={styles.emptyListText}>Result Not Fount</Text>
+    </View>
+  )
+}
+
 const renderItem = ({item}) => {
   return (
       <TouchableOpacity style={styles.flexOne} onPress={() => addToWishList(item)}>
@@ -131,6 +139,8 @@ const renderItem = ({item}) => {
               numColumns={NUMBER_COLUMNS}
               keyExtractor={(item) => item.imdbID}
               extraData={[fetchSelectedMovie.toJS(),fetchMovieData.toJS()]}
+              ListEmptyComponent={renderEmptyComponent}
+              contentContainerStyle={{flexGrow: 1}}
             />
          }
       </View>
@@ -199,7 +209,16 @@ const styles = StyleSheet.create({
   },
   flexOne:{
     flex: 1
-  }
+  },
+  renderEmptyComponentView: {
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  emptyListText:{
+    fontWeight:'bold',
+    fontSize:17,
+  },
 });
 
 const mapStateToProps = createStructuredSelector({
