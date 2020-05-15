@@ -7,7 +7,7 @@
 ## Feature's
 - Search Bar with debouncing so api will get call after user stop searching for 500ms
 - Implemented using redux boilerplate code for react-native
-- 
+- Add favorite movie to wish list.
 
 ## Prerequisite
 - Node 
