@@ -1,6 +1,5 @@
 # About
 > Basic Movie List App build in react-native using expo
-> There are 2 Screens 
 - 1st screen is Search screen where The user will search the movie from the search bar tap on any movie card displayed below to add to wish list.
 - 2nd screen will display the movie added to wish list
 
