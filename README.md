@@ -20,5 +20,5 @@
 - $ expo ba     <!-- to build android apk -->
 
 ## demo image
-<img src="assets/search.jpeg" width="350" height="450">
-<img src="assets/wishlist.jpeg" width="350" height="450">
+<img src="assets/search.jpeg" width="250" height="450">
+<img src="assets/wishlist.jpeg" width="250" height="450">
