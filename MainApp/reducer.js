@@ -3,14 +3,16 @@ import { fromJS } from 'immutable';
 import {
   TOGGLE_SELECTED_MOVIE,
   UPDATE_WISH_LIST,
+  SET_MOVIE_DATA,
+  LOADER,
 } from './actions';
 
-import { data } from "../constant";
 
 const initialState = fromJS({
   wishListData: [],
   selectedMovie: {},
-  movieData : [...data],
+  movieData : [],
+  loading: false,
 });
 
 export default function appReducer(state = initialState, action) {
@@ -20,6 +22,10 @@ export default function appReducer(state = initialState, action) {
       return state.set('selectedMovie',immutableData)
     case UPDATE_WISH_LIST:
       return state.set('wishListData',immutableData)
+    case LOADER: 
+      return state.set('loading', immutableData)
+    case SET_MOVIE_DATA:
+      return state.set('movieData',immutableData)
     default:
       return state;
   }

@@ -38,3 +38,19 @@ export function getSearchTermResult(data){
     data,
   }
 }
+
+export const LOADER = 'boilerplate/MainApp/LOADER';
+export function setLoader(data) {
+  return {
+    type: LOADER,
+    data,
+  };
+}
+
+export const SET_MOVIE_DATA = 'boilerplate/MainApp/SET_MOVIE_DATA';
+export function setMovieData(data) {
+  return {
+    type: SET_MOVIE_DATA,
+    data,
+  };
+}

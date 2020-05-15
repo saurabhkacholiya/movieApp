@@ -14,8 +14,7 @@ import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux'
 import { FontAwesome } from 'react-native-vector-icons';
 import { truncateString } from "../utils/commonFunctions";
-import { 
-  data,
+import {
   NUMBER_COLUMNS,
   ITEM_WIDTH,
   COLORS,
@@ -24,27 +23,27 @@ import {
   fetchMovieData,
   fetchSelectedMovie,
   fetchWishListData,
+  fetchLoaderStatus,
 } from "../MainApp/selectors";
 import { 
   toggleTheValueOfSelectedMovie,
   updateWishList,
   getSearchTermResult,
 } from "../MainApp/actions";
-import NetworkUtils from "../utils/NetworkUtils";
 
 function SearchScreen({
-  navigation,
   fetchMovieData,
   fetchSelectedMovie,
   toggleTheValueOfSelectedMovie,
   updateWishList,
   fetchWishListData,
   getSearchTermResult,
+  loader,
 }) {
 
-  useEffect(() => {
-    getSearchTermResult('world')
-  },[])
+useEffect(() => {
+  getSearchTermResult('fire')
+},[])
 
 const debounce = function (callback,delay){
   let timer
@@ -56,8 +55,8 @@ const debounce = function (callback,delay){
   }
 }
 
-// const onChange = debounce(setDataAfterTimeOut, 500);
-const onChange = debounce(() => console.log('called'), 500);
+
+const onChange = debounce(getSearchTermResult, 500);
 
 const addToWishList = (item) => {
       const selectedMovieObj = fetchSelectedMovie.toJS()
@@ -68,11 +67,11 @@ const addToWishList = (item) => {
        [item.imdbID]: selectedMovieObj[item.imdbID] ? false : true
      }
      
-     if(selectedMovieObj[item.imdbID]){
-       newWishList = wishListMovies.filter(obj => obj.imdbID !== item.imdbID)
-     }else{
-       newWishList = [...wishListMovies, item]
-     }
+    if(selectedMovieObj[item.imdbID]){
+      newWishList = wishListMovies.filter(obj => obj.imdbID !== item.imdbID)
+    }else{
+      newWishList = [...wishListMovies, item]
+    }
 
     toggleTheValueOfSelectedMovie(newSelectedMovieList)
     updateWishList(newWishList)  
@@ -123,13 +122,17 @@ const renderItem = ({item}) => {
           </View>
       </View>
       <View style={styles.container}>
-        <FlatList 
-          data={fetchMovieData.toJS()}
-          renderItem={renderItem}
-          numColumns={NUMBER_COLUMNS}
-          keyExtractor={(item) => item.imdbID}
-          extraData={[fetchSelectedMovie.toJS(),fetchMovieData.toJS()]}
-        />
+         {
+          loader
+          ? <Loader isLoading={loader} />
+          : <FlatList 
+              data={fetchMovieData.toJS()}
+              renderItem={renderItem}
+              numColumns={NUMBER_COLUMNS}
+              keyExtractor={(item) => item.imdbID}
+              extraData={[fetchSelectedMovie.toJS(),fetchMovieData.toJS()]}
+            />
+         }
       </View>
     </SafeAreaView>
   )
@@ -203,6 +206,7 @@ const mapStateToProps = createStructuredSelector({
   fetchMovieData: fetchMovieData(),
   fetchSelectedMovie: fetchSelectedMovie(),
   fetchWishListData: fetchWishListData(),
+  loader: fetchLoaderStatus(),
 });
 
 

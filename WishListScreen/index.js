@@ -8,12 +8,9 @@ import {
   Image,
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Loader from '../utils/Loader';
 import { 
-  data,
   NUMBER_COLUMNS,
   ITEM_WIDTH,
-  COLORS,
 } from "../constant";
 import { truncateString } from "../utils/commonFunctions";
 import { createStructuredSelector } from 'reselect';
@@ -21,10 +18,8 @@ import { connect } from 'react-redux'
 import { fetchWishListData } from "../MainApp/selectors";
 
 function WishListScreen({ 
-  navigation,
   fetchWishListData,
 }) {
-  console.log('ehehe ', fetchWishListData)
   const renderItem = ({item}) => {
     return (
         <View style={styles.flexOne}>

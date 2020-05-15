@@ -19,3 +19,9 @@ export const fetchSelectedMovie = () =>
     selectGlobal,
     globalState => globalState.get('selectedMovie'),
 );
+
+export const fetchLoaderStatus = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.get('loading'),
+);
