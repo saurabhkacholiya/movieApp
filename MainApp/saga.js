@@ -1,12 +1,6 @@
 import {
-  call,
-  all,
   put,
-  select,
-  takeLatest,
   takeEvery,
-  delay,
-  takeLeading,
 } from 'redux-saga/effects';
 import { 
   GET_SEARCH_TERM_RESULT,
